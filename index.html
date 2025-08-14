@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Upselling Platform</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            padding: 40px;
+            text-align: center;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 3em;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 40px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+        }
+
+        @media (max-width: 768px) {
+            .content {
+                grid-template-columns: 1fr;
+                gap: 30px;
+                padding: 20px;
+            }
+        }
+
+        .section {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .section h2 {
+            color: #4facfe;
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section h2::before {
+            content: '';
+            width: 4px;
+            height: 30px;
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            border-radius: 2px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        input[type="url"] {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e1e5e9;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: #f8f9fa;
+        }
+
+        input[type="text"]:focus,
+        input[type="number"]:focus,
+        input[type="url"]:focus {
+            border-color: #4facfe;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(79, 172, 254, 0.1);
+            outline: none;
+        }
+
+        .btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(79, 172, 254, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(79, 172, 254, 0.4);
+        }
+
+        .btn-secondary {
+            background: #f8f9fa;
+            color: #667eea;
+            border: 2px solid #e1e5e9;
+        }
+
+        .btn-secondary:hover {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+            color: white;
+            padding: 10px 20px;
+            font-size: 14px;
+        }
+
+        .btn-danger:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+        }
+
+        .comp-item {
+            background: #f8f9fa;
+            border: 2px dashed #e1e5e9;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .comp-item:hover {
+            border-color: #4facfe;
+            background: rgba(79, 172, 254, 0.02);
+        }
+
+        .comp-item h4 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.1em;
+        }
+
+        .remove-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+        }
+
+        #displayArea, #searchResults {
+            grid-column: 1 / -1;
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            display: none;
+        }
+
+        .search-result-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            align-items: start;
+        }
+
+        @media (max-width: 768px) {
+            .search-result-container {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+        }
+
+        .main-item-card, .complementary-items-card {
+            background: linear-gradient(135deg, rgba(79, 172, 254, 0.05) 0%, rgba(0, 242, 254, 0.05) 100%);
+            border-radius: 15px;
+            padding: 25px;
+            border: 2px solid rgba(79, 172, 254, 0.1);
+        }
+
+        .main-item-card h2, .complementary-items-card h3 {
+            color: #4facfe;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .main-item-display {
+            display: flex;
+            align-items: center;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .main-item-display img {
+            width: 120px;
+            height: 120px;
+            object-fit: cover;
+            border-radius: 10px;
+            margin-right: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .main-item-info h3 {
+            font-size: 1.4em;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .main-item-info .price {
+            font-size: 1.3em;
+            font-weight: 700;
+            color: #4facfe;
+        }
+
+        .upsell-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+        }
+
+        .upsell-item {
+            background: white;
+            border: 2px solid #f0f0f0;
+            border-radius: 10px;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .upsell-item:hover {
+            border-color: #4facfe;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(79, 172, 254, 0.15);
+        }
+
+        .upsell-item img {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-right: 15px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .upsell-info h4 {
+            color: #333;
+            margin-bottom: 5px;
+            font-size: 1em;
+        }
+
+        .upsell-info .price {
+            color: #4facfe;
+            font-weight: 600;
+            font-size: 1em;
+        }
+
+        .error {
+            background: #fff5f5;
+            border: 2px solid #fed7d7;
+            color: #c53030;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 15px;
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .search-container {
+            display: flex;
+            gap: 10px;
+            align-items: end;
+        }
+
+        .search-container .form-group {
+            flex: 1;
+            margin-bottom: 0;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #888;
+        }
+
+        .empty-state svg {
+            width: 80px;
+            height: 80px;
+            margin-bottom: 20px;
+            opacity: 0.3;
+        }
+
+        .badge {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+
+        .feature-badge {
+            background: linear-gradient(135deg, #ffd89b 0%, #19547b 100%);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 25px;
+            font-size: 14px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            margin-bottom: 20px;
+        }
+
+        .bundle-total {
+            background: linear-gradient(135deg, rgba(79, 172, 254, 0.1) 0%, rgba(0, 242, 254, 0.1) 100%);
+            border: 2px solid rgba(79, 172, 254, 0.2);
+            padding: 20px;
+            border-radius: 15px;
+            margin-top: 25px;
+            text-align: center;
+        }
+
+        .bundle-total h4 {
+            color: #4facfe;
+            margin-bottom: 8px;
+            font-size: 1.3em;
+        }
+
+        .bundle-total p {
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .relationship-indicator {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            color: #333;
+            padding: 10px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 Advanced Upselling Platform</h1>
+            <p>Create intelligent product relationships with bidirectional recommendations</p>
+            <div class="feature-badge">
+                ✨ Smart Bidirectional Links
+            </div>
+        </div>
+        
+        <div class="content">
+            <!-- Search Section -->
+            <div class="section">
+                <h2>🔍 Search Items</h2>
+                <div class="search-container">
+                    <div class="form-group">
+                        <label for="searchInput">Find Main Item by Name:</label>
+                        <input type="text" id="searchInput" placeholder="Enter item name to search...">
+                    </div>
+                    <button type="button" id="searchButton" class="btn btn-primary">Search</button>
+                </div>
+                <p id="searchError" class="error">🚫 Item not found or no items available.</p>
+                <div style="margin-top:12px;"><button type="button" id="clearSaved" class="btn btn-danger">🧹 Clear Saved Data</button></div>
+            </div>
+            
+            <!-- Form Section -->
+            <div class="section">
+                <h2>📦 Add New Item</h2>
+                <form id="mainForm">
+                    <div class="form-group">
+                        <label for="mainName">Main Item Name:</label>
+                        <input type="text" id="mainName" placeholder="Enter product name..." required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="mainPrice">Main Item Price ($):</label>
+                        <input type="number" id="mainPrice" step="0.01" min="0" placeholder="0.00" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="mainImageUrl">Main Item Image URL:</label>
+                        <input type="url" id="mainImageUrl" placeholder="https://example.com/image.jpg">
+                    </div>
+                    
+                    <h3 style="color: #667eea; margin: 30px 0 20px 0;">🎯 Complementary Items</h3>
+                    <div class="relationship-indicator">
+                        💡 Items added here will automatically create bidirectional relationships
+                    </div>
+                    <div id="compItems"></div>
+                    
+                    <button type="button" id="addCompButton" class="btn btn-secondary">+ Add Complementary Item</button>
+                    
+                    <p id="formError" class="error">⚠️ Please fill in all required fields for the main item.</p>
+                    
+                    <div style="margin-top: 30px;">
+                        <button type="button" onclick="saveAndDisplayUpsell()" class="btn btn-primary">
+                            ✨ Add Product
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <div id="searchResults"></div>
+        <div id="displayArea"></div>
+    </div>
+    
+    <script>
+        let compCount = 0;
+        let items = []; // In-memory storage for items
+        function saveItems(){ try{ localStorage.setItem('upsell_items', JSON.stringify(items)); }catch(e){ console.warn('Could not save items', e);} }
+    
+        // Load items from localStorage on startup
+        try {
+            const saved = localStorage.getItem('upsell_items');
+            if (saved) {
+                items = JSON.parse(saved);
+                // If there are items, render a gentle hint for the user
+                setTimeout(() => {
+                    const displayArea = document.getElementById('displayArea');
+                    if (items.length > 0 && displayArea) {
+                        displayArea.style.display = 'block';
+                        displayArea.innerHTML = '<div class="empty-state"><p>📦 Loaded ' + items.length + ' saved item(s). Use Search to find them.</p></div>';
+                    }
+                }, 0);
+            }
+        } catch (e) {
+            console.warn('Failed to load saved items', e);
+        }
+        
+        // Add complementary item
+        document.getElementById('addCompButton').addEventListener('click', addCompItem);
+        
+        // Search button event listener
+        document.getElementById('searchButton').addEventListener('click', searchItem);
+        
+        // Enter key search
+        const clearBtn = document.getElementById('clearSaved');
+        if (clearBtn){
+            clearBtn.addEventListener('click', function(){
+                if (confirm('Clear all saved items?')){
+                    localStorage.removeItem('upsell_items');
+                    items = [];
+                    const displayArea = document.getElementById('displayArea');
+                    const searchResults = document.getElementById('searchResults');
+                    if (displayArea){ displayArea.style.display='none'; displayArea.innerHTML=''; }
+                    if (searchResults){ searchResults.style.display='none'; searchResults.innerHTML=''; }
+                    alert('Saved data cleared.');
+                }
+            });
+        }
+    
+        document.getElementById('searchInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                searchItem();
+            }
+        });
+        
+        function addCompItem() {
+            compCount++;
+            const compDiv = document.createElement('div');
+            compDiv.className = 'comp-item';
+            compDiv.id = 'comp-' + compCount;
+            compDiv.innerHTML = `
+                <button type="button" class="btn btn-danger remove-btn" onclick="removeCompItem('comp-${compCount}')">×</button>
+                <h4>Complementary Item #${compCount}</h4>
+                
+                <div class="form-group">
+                    <label for="compName${compCount}">Item Name:</label>
+                    <input type="text" class="compName" id="compName${compCount}" placeholder="Enter complementary item name..." required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="compPrice${compCount}">Price ($):</label>
+                    <input type="number" class="compPrice" id="compPrice${compCount}" step="0.01" min="0" placeholder="0.00" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="compImageUrl${compCount}">Image URL:</label>
+                    <input type="url" class="compImageUrl" id="compImageUrl${compCount}" placeholder="https://example.com/image.jpg">
+                </div>
+            `;
+            document.getElementById('compItems').appendChild(compDiv);
+        }
+        
+        function removeCompItem(id) {
+            const item = document.getElementById(id);
+            if (item) {
+                item.remove();
+            }
+        }
+        
+        function saveAndDisplayUpsell() {
+            const mainName = document.getElementById('mainName').value;
+            const mainPrice = document.getElementById('mainPrice').value;
+            const mainImageUrl = document.getElementById('mainImageUrl').value;
+            
+            // Basic validation
+            if (!mainName || !mainPrice) {
+                const errorEl = document.getElementById('formError');
+                errorEl.style.display = 'block';
+                setTimeout(() => {
+                    errorEl.style.display = 'none';
+                }, 3000);
+                return;
+            } else {
+                document.getElementById('formError').style.display = 'none';
+            }
+            
+            // Collect complementary items
+            const compNames = document.getElementsByClassName('compName');
+            const compPrices = document.getElementsByClassName('compPrice');
+            const compImageUrls = document.getElementsByClassName('compImageUrl');
+            const compItems = [];
+            
+            for (let i = 0; i < compNames.length; i++) {
+                const name = compNames[i].value;
+                const price = compPrices[i].value;
+                const imageUrl = compImageUrls[i].value;
+                if (name && price) {
+                    compItems.push({ name, price: parseFloat(price), imageUrl });
+                }
+            }
+            
+            // Save main item to in-memory storage
+            const newItem = {
+                mainName,
+                mainPrice: parseFloat(mainPrice),
+                mainImageUrl,
+                complementaryItems: compItems
+            };
+            items.push(newItem);
+            saveItems();
+            
+            // Handle bidirectional complementary relationships
+            compItems.forEach(comp => {
+                // Check if the complementary item exists as a main item
+                let existingItem = items.find(item => item.mainName.toLowerCase() === comp.name.toLowerCase());
+                if (existingItem) {
+                    // Add the current main item as a complementary item to the existing main item
+                    const existingComp = existingItem.complementaryItems.find(c => c.name.toLowerCase() === mainName.toLowerCase());
+                    if (!existingComp) {
+                        existingItem.complementaryItems.push({
+                            name: mainName,
+                            price: parseFloat(mainPrice),
+                            imageUrl: mainImageUrl
+                        });
+                    }
+                } else {
+                    // Create a new main item for the complementary item with default price/image
+                    items.push({
+                        mainName: comp.name,
+                        mainPrice: comp.price,
+                        mainImageUrl: comp.imageUrl || '',
+                        complementaryItems: [{
+                            name: mainName,
+                            price: parseFloat(mainPrice),
+                            imageUrl: mainImageUrl
+                        }]
+                    });
+                }
+            });
+            
+            saveItems();
+            // Display the upsell page
+            displayUpsell(newItem, 'displayArea');
+            
+            // Clear form
+            document.getElementById('mainForm').reset();
+            document.getElementById('compItems').innerHTML = '';
+            compCount = 0;
+            
+            // Show success message
+            const displayArea = document.getElementById('displayArea');
+            displayArea.style.display = 'block';
+            displayArea.scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        function displayUpsell(item, targetElementId) {
+            let displayHtml = '';
+            
+            if (targetElementId === 'searchResults') {
+                // For search results, use flexbox layout with "Searched Item" heading
+                displayHtml += '<h2 style="color: #4facfe; margin-bottom: 30px; font-size: 2em;">🔍 Search Results</h2>';
+                displayHtml += '<div class="search-result-container">';
+                
+                // Main item section
+                displayHtml += '<div class="main-item-card">';
+                displayHtml += '<h2>🎯 Searched Item</h2>';
+                displayHtml += '<div class="main-item-display">';
+                if (item.mainImageUrl) {
+                    displayHtml += `<img src="${item.mainImageUrl}" alt="${item.mainName}" onerror="this.style.display='none'">`;
+                }
+                displayHtml += `<div class="main-item-info">
+                    <h3>${item.mainName}</h3>
+                    <div class="price">$${parseFloat(item.mainPrice).toFixed(2)}</div>
+                </div></div></div>`;
+                
+                // Complementary items section
+                displayHtml += '<div class="complementary-items-card">';
+                displayHtml += '<h3>🎁 Recommended Add-ons</h3>';
+                if (item.complementaryItems.length > 0) {
+                    displayHtml += '<div class="upsell-grid">';
+                    item.complementaryItems.forEach(comp => {
+                        displayHtml += '<div class="upsell-item">';
+                        if (comp.imageUrl) {
+                            displayHtml += `<img src="${comp.imageUrl}" alt="${comp.name}" onerror="this.style.display='none'">`;
+                        }
+                        displayHtml += `<div class="upsell-info">
+                            <h4>${comp.name}</h4>
+                            <div class="price">$${parseFloat(comp.price).toFixed(2)}</div>
+                        </div></div>`;
+                    });
+                    displayHtml += '</div>';
+                    
+                    // Bundle total for search results
+                    const totalCompPrice = item.complementaryItems.reduce((sum, comp) => sum + comp.price, 0);
+                    const bundleTotal = item.mainPrice + totalCompPrice;
+                    displayHtml += `<div class="bundle-total">
+                        <h4>💰 Bundle Total: $${bundleTotal.toFixed(2)}</h4>
+                        <p>Save more when you buy together!</p>
+                    </div>`;
+                } else {
+                    displayHtml += '<div class="empty-state"><p>No complementary items available for this product.</p></div>';
+                }
+                displayHtml += '</div>';
+                displayHtml += '</div>';
+            } else {
+                // For preview (displayArea), keep enhanced layout
+                displayHtml += '<h2 style="color: #4facfe; margin-bottom: 30px; font-size: 2em;">🎉 Upsell Page Preview</h2>';
+                
+                // Main item display
+                displayHtml += '<div class="main-item-display" style="margin-bottom: 30px;">';
+                if (item.mainImageUrl) {
+                    displayHtml += `<img src="${item.mainImageUrl}" alt="${item.mainName}" onerror="this.style.display='none'">`;
+                }
+                displayHtml += `<div class="main-item-info">
+                    <h3>${item.mainName} <span class="badge">Main Item</span></h3>
+                    <div class="price">$${parseFloat(item.mainPrice).toFixed(2)}</div>
+                </div></div>`;
+                
+                if (item.complementaryItems.length > 0) {
+                    displayHtml += '<h3 style="color: #4facfe; margin-bottom: 20px;">🎯 Recommended Add-ons</h3>';
+                    displayHtml += '<div class="upsell-grid">';
+                    
+                    item.complementaryItems.forEach(comp => {
+                        displayHtml += '<div class="upsell-item">';
+                        if (comp.imageUrl) {
+                            displayHtml += `<img src="${comp.imageUrl}" alt="${comp.name}" onerror="this.style.display='none'">`;
+                        }
+                        displayHtml += `<div class="upsell-info">
+                            <h4>${comp.name}</h4>
+                            <div class="price">$${parseFloat(comp.price).toFixed(2)}</div>
+                        </div></div>`;
+                    });
+                    
+                    displayHtml += '</div>';
+                    
+                    // Calculate total savings or bundle price
+                    const totalCompPrice = item.complementaryItems.reduce((sum, comp) => sum + comp.price, 0);
+                    const bundleTotal = item.mainPrice + totalCompPrice;
+                    displayHtml += `<div class="bundle-total">
+                        <h4>💰 Bundle Total: $${bundleTotal.toFixed(2)}</h4>
+                        <p>🔄 Bidirectional relationships automatically created!</p>
+                    </div>`;
+                } else {
+                    displayHtml += '<div class="empty-state"><p>No complementary items added yet. Add some to create an effective upsell strategy!</p></div>';
+                }
+            }
+            
+            document.getElementById(targetElementId).innerHTML = displayHtml;
+        }
+        
+        function searchItem() {
+            const searchInput = document.getElementById('searchInput').value.trim().toLowerCase();
+            const searchError = document.getElementById('searchError');
+            const searchResults = document.getElementById('searchResults');
+            
+            if (!searchInput) {
+                searchError.textContent = '🚫 Please enter a search term.';
+                searchError.style.display = 'block';
+                searchResults.style.display = 'none';
+                setTimeout(() => {
+                    searchError.style.display = 'none';
+                }, 3000);
+                return;
+            }
+            
+            if (items.length === 0) {
+                searchError.textContent = '🚫 No items available. Create some items first!';
+                searchError.style.display = 'block';
+                searchResults.style.display = 'none';
+                setTimeout(() => {
+                    searchError.style.display = 'none';
+                }, 3000);
+                return;
+            }
+            
+            const foundItem = items.find(item => item.mainName.toLowerCase().includes(searchInput));
+            
+            if (foundItem) {
+                searchError.style.display = 'none';
+                searchResults.style.display = 'block';
+                displayUpsell(foundItem, 'searchResults');
+                searchResults.scrollIntoView({ behavior: 'smooth' });
+            } else {
+                searchError.textContent = `🚫 No items found matching "${searchInput}". Try a different search term.`;
+                searchError.style.display = 'block';
+                searchResults.style.display = 'none';
+                setTimeout(() => {
+                    searchError.style.display = 'none';
+                }, 3000);
+            }
+        }
+    </script>
+</body>
+</html>
